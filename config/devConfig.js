@@ -69,7 +69,10 @@ const config={
     plugins:[
         new webpack.NamedModulesPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new webpack.ProvidePlugin({
+            BScroll:'better-scroll'
+        })
     ]
 };
 

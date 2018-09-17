@@ -28,12 +28,13 @@
         min-width: 768px;
         max-width: 1280px;
         height: 100%;
+        font-size: inherit;
         .box{
             position: absolute;
-            width: 92%;
-            height: 94%;
+            width: 93%;
+            height: 96%;
             right: 0;
-            /*background-color: #2AC845;*/
+            background-color: RED;
             overflow: hidden;
         }
     }

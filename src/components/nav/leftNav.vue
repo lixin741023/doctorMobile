@@ -60,8 +60,8 @@
     .leftNav{
         position: absolute;
         left: 0;
-        width: 8%;
-        height: 94%;
+        width: 7%;
+        height: 96%;
         z-index: 3;
         background-color: #f7f7f7;
         border-right: 1px solid #e1e1e1;
@@ -77,8 +77,8 @@
             align-items: center;
             margin-top: 0.25rem;
             img{
-                width: 0.3rem;
-                height: 0.3rem;
+                width: 0.25rem;
+                height: 0.25rem;
             }
             span{
                 margin-top: 0.07rem;

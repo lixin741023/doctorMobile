@@ -22,7 +22,7 @@
         display: flex;
         align-items: center;
         width: 100%;
-        height: 6%;
+        height: 4%;
         bottom: 0;
         border-top: 1px solid #e1e1e1;
         background-color: #F7F7F7;
