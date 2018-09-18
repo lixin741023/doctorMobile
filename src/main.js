@@ -1,12 +1,9 @@
 import Vue from 'vue';
 import app from './app.vue';
-import VueRouter from 'vue-router';
-Vue.use(VueRouter);
-import {routes} from "./router/routes";
-const router=new VueRouter({
-    routes
-});
+import {router} from "./router";
+import store from './store';
 
+import './js/localstorage.js';
 import './plugins/indigo.js';
 import mui from './plugins/mui-master/dist/js/mui.js';
 
@@ -16,6 +13,7 @@ import './styles/global.less';
 
 
 new Vue({
+    store,
     router,
     render:(core)=>core(app)
 }).$mount('#app');

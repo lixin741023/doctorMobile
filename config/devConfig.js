@@ -71,7 +71,8 @@ const config={
         new webpack.HotModuleReplacementPlugin(),
         new VueLoaderPlugin(),
         new webpack.ProvidePlugin({
-            BScroll:'better-scroll'
+            BScroll:'better-scroll',
+            $:'jquery'
         })
     ]
 };

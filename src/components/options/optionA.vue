@@ -3,13 +3,14 @@
         <div class="top">
             <div class="KeShi">
                 <span>科室:</span>
-                <select name="" id="">
-                    <option value="">室症医学科</option>
+                <select name="" id="" v-model="KeShi_check">
+                    <option value="0">所有科室</option>
+                    <option v-for="(a,b) in KeShi_list" :value="a.groupId">{{a.groupName}}</option>
                 </select>
             </div>
             <div class="search">
-                <input type="text" maxlength="15" placeholder="根据住院号/姓名查询">
-                <button>查询</button>
+                <input type="text" maxlength="15" placeholder="根据住院号/姓名查询" v-model="searchBox">
+                <button @click="query">查询</button>
             </div>
             <div class="switch">
                 <span>危急</span>
@@ -21,28 +22,28 @@
             </div>
         </div>
         <div class="merge">
-            <div class="left">
-                <div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
+            <div class="left" v-infinite-scroll="loadMore" infinite-scroll-immediate-check="false">
+                <div v-show="HuanZhe_List.length===0" class="noQuery_HuanZhe">没有查询到患者</div>
+                <div v-for="(a,b) in HuanZhe_List" class="item" @click="chooseHuanZhe(b)" >
+                    <div class="grid1" :class="{'bg':b===chooseHuanZhe_i-1}">
+                        <span>{{a.name}}</span>
+                        <span>{{a.bedName}}</span>
                     </div>
-                    <div class="grid2">
+                    <div class="grid2" :class="{'border':b===chooseHuanZhe_i-1}">
                         <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
+                            <span>{{a.gender}}</span>
+                            <span>{{a.age}}</span>
+                            <span>{{a.clinicNumber|standBy_clinicNumber}}</span>
                         </div>
                         <div class="row2">
                             <span>流行性感冒传热肺结核病</span>
                         </div>
                         <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
+                            <span>{{a.doctorName}}</span>
+                            <span>{{a.diseaseAreaName}}</span>
                         </div>
                     </div>
-                    <div class="grid3">
+                    <div class="grid3" :class="{'border':b===chooseHuanZhe_i-1}">
                         <div class="row1">
                             <span>张妮妮</span>
                             <span>普外科病区</span>
@@ -52,7 +53,7 @@
                             <span>三级护理</span>
                         </div>
                     </div>
-                    <div class="grid4">
+                    <div class="grid4" :class="{'border':b===chooseHuanZhe_i-1}">
                         <div>
                             <img src="../../images/YiZhuICON.png" alt="">
                             <span>24</span>
@@ -62,625 +63,105 @@
                             <span>14</span>
                         </div>
                     </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="grid1">
-                        <span>张达达达</span>
-                        <span>5211床</span>
-                    </div>
-                    <div class="grid2">
-                        <div class="row1">
-                            <span>男</span>
-                            <span>125岁</span>
-                            <span>20180855152459</span>
-                        </div>
-                        <div class="row2">
-                            <span>流行性感冒传热肺结核病</span>
-                        </div>
-                        <div class="row3">
-                            <span>越天泽泽</span>
-                            <span>重症医学观察科</span>
-                        </div>
-                    </div>
-                    <div class="grid3">
-                        <div class="row1">
-                            <span>张妮妮</span>
-                            <span>普外科病区</span>
-                        </div>
-                        <div class="row2">
-                            <span>护理级别</span>
-                            <span>三级护理</span>
-                        </div>
-                    </div>
-                    <div class="grid4">
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>24</span>
-                        </div>
-                        <div>
-                            <img src="../../images/YiZhuICON.png" alt="">
-                            <span>14</span>
-                        </div>
-                    </div>
-                </div>
                 </div>
             </div>
             <div class="right">
                 <div class="sideTitle"></div>
                 <div class="sideButton">
-                    <span class="fa fa-angle-double-right"></span>
+                    <span v-show="!patientDetails" @click="show_patientDetails" class="fa fa-angle-double-left"></span>
+                    <span v-show="patientDetails" @click="hidden_patientDetails" class="fa fa-angle-double-right"></span>
                     <div></div>
                 </div>
-                <div class="side">
-                <div>
-                    <div class="row row1">
-                        <span class="name">张达达达</span>
-                        <span class="sex">男</span>
-                        <span class="age">123岁</span>
-                        <span class="weight">65kg</span>
+                <div  class="side">
+                    <div v-if="chooseHuanZhe_i">
+                        <div class="row row1">
+                            <span class="name">{{HuanZhe_List[chooseHuanZhe_i-1].name}}</span>
+                            <span class="sex">男</span>
+                            <span class="age">123岁</span>
+                            <span class="weight">65kg</span>
+                        </div>
+                        <div class="row">
+                            <span>住院号：</span>
+                            <span>20180511251355</span>
+                        </div>
+                        <div class="row">
+                            <span>科室：</span>
+                            <span>重症医学科</span>
+                        </div>
+                        <div class="row">
+                            <span>住院医生：</span>
+                            <span>赵天泽泽</span>
+                        </div>
+                        <div class="row2">
+                            <span>诊断：</span>
+                            <span>超感染性流感禽流感传染性扩张过敏性鼻炎肺结核超感染性流感禽流感传染性扩张过敏性鼻炎肺结核</span>
+                        </div>
+                        <div class="row">
+                            <span>过敏史：</span>
+                            <span>空</span>
+                        </div>
+                        <div class="row">
+                            <span>患者情况：</span>
+                            <span>一般</span>
+                        </div>
+                        <div class="row">
+                            <span>责任护士：</span>
+                            <span>张妮妮妮</span>
+                        </div>
+                        <div class="row">
+                            <span>护理级别：</span>
+                            <span>三级护理</span>
+                        </div>
+                        <div class="row">
+                            <span>入科时间：</span>
+                            <span>2018/08/09 11:12:32</span>
+                        </div>
+                        <div class="row">
+                            <span>入院时间：</span>
+                            <span>2018/08/09 11:12:32</span>
+                        </div>
+                        <div class="row">
+                            <span>入院天数：</span>
+                            <span>5天</span>
+                        </div>
+                        <div class="row">
+                            <span>入院经办：</span>
+                            <span>张航航航</span>
+                        </div>
+                        <div class="row">
+                            <span>费用类别：</span>
+                            <span>社保</span>
+                        </div>
+                        <div class="row">
+                            <span>总预交：</span>
+                            <span>￥5000.00</span>
+                        </div>
+                        <div class="row">
+                            <span>总预交：</span>
+                            <span>￥4800.00</span>
+                        </div>
+                        <div class="row">
+                            <span>担保金额：</span>
+                            <span>￥50.00</span>
+                        </div>
+                        <div class="row">
+                            <span>余额：</span>
+                            <span>￥-328.00</span>
+                        </div>
+                        <div class="row2">
+                            <span>住址：</span>
+                            <span>成都市金牛区 明月路8栋000单元10号成都市金牛区 明月路8栋000单元10号</span>
+                        </div>
+                        <div class="row">
+                            <span>联系方式：</span>
+                            <span>18982555555</span>
+                        </div>
+                        <div style="height: 60px;"></div>
                     </div>
-                    <div class="row">
-                        <span>住院号：</span>
-                        <span>20180511251355</span>
-                    </div>
-                    <div class="row">
-                        <span>科室：</span>
-                        <span>重症医学科</span>
-                    </div>
-                    <div class="row">
-                        <span>住院医生：</span>
-                        <span>赵天泽泽</span>
-                    </div>
-                    <div class="row2">
-                        <span>诊断：</span>
-                        <span>超感染性流感禽流感传染性扩张过敏性鼻炎肺结核超感染性流感禽流感传染性扩张过敏性鼻炎肺结核</span>
-                    </div>
-                    <div class="row">
-                        <span>过敏史：</span>
-                        <span>空</span>
-                    </div>
-                    <div class="row">
-                        <span>患者情况：</span>
-                        <span>一般</span>
-                    </div>
-                    <div class="row">
-                        <span>责任护士：</span>
-                        <span>张妮妮妮</span>
-                    </div>
-                    <div class="row">
-                        <span>护理级别：</span>
-                        <span>三级护理</span>
-                    </div>
-                    <div class="row">
-                        <span>入科时间：</span>
-                        <span>2018/08/09 11:12:32</span>
-                    </div>
-                    <div class="row">
-                        <span>入院时间：</span>
-                        <span>2018/08/09 11:12:32</span>
-                    </div>
-                    <div class="row">
-                        <span>入院天数：</span>
-                        <span>5天</span>
-                    </div>
-                    <div class="row">
-                        <span>入院经办：</span>
-                        <span>张航航航</span>
-                    </div>
-                    <div class="row">
-                        <span>费用类别：</span>
-                        <span>社保</span>
-                    </div>
-                    <div class="row">
-                        <span>总预交：</span>
-                        <span>￥5000.00</span>
-                    </div>
-                    <div class="row">
-                        <span>总预交：</span>
-                        <span>￥4800.00</span>
-                    </div>
-                    <div class="row">
-                        <span>担保金额：</span>
-                        <span>￥50.00</span>
-                    </div>
-                    <div class="row">
-                        <span>余额：</span>
-                        <span>￥-328.00</span>
-                    </div>
-                    <div class="row2">
-                        <span>住址：</span>
-                        <span>成都市金牛区 明月路8栋000单元10号成都市金牛区 明月路8栋000单元10号</span>
-                    </div>
-                    <div class="row">
-                        <span>联系方式：</span>
-                        <span>18982555555</span>
-                    </div>
-                    <div style="height: 60px;"></div>
-                </div>
+                    <div v-if="!chooseHuanZhe_i" class="noChoose_HuanZhe">选择左侧患者</div>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -688,14 +169,155 @@
     import Vue from 'vue';
     import { Switch } from 'mint-ui';
     Vue.component(Switch.name, Switch);
+    import { InfiniteScroll } from 'mint-ui';
+    Vue.use(InfiniteScroll);
+    import {lx} from "../../js/global";
     export default {
         name: "optionA",
         data:()=>({
+            patientDetails:false,
             GuanChuang:true,
-            WeiJi:true
+            WeiJi:true,
+            KeShi_check:undefined,
+            KeShi_list:[],
+            searchBox:'',
+            page:1,
+            total:1,
+            HuanZhe_List:[],
+            onceTip:true,
+            chooseHuanZhe_i:undefined
         }),
-        beforeMount:function () {
+        watch:{
+            KeShi_check:function () {
+                $('.optionA .left').scrollTop(0);
+                this.chooseHuanZhe_i=undefined;
+                this.page=1;
+                this.onceTip=true;
+                this.HuanZhe_List=[];
+                this.query_patient();
+            },
+            GuanChuang:function () {
+                $('.optionA .left').scrollTop(0);
+                this.chooseHuanZhe_i=undefined;
+                this.page=1;
+                this.onceTip=true;
+                this.HuanZhe_List=[];
+                this.query_patient();
+            },
+            WeiJi:function () {
+                $('.optionA .left').scrollTop(0);
+                this.chooseHuanZhe_i=undefined;
+                this.page=1;
+                this.onceTip=true;
+                this.HuanZhe_List=[];
+                this.query_patient();
+            }
+        },
+        filters:{
+            standBy_clinicNumber(a){
+                return a.slice(0,13);
+            }
+        },
+        computed:{
 
+        },
+        methods:{
+            chooseHuanZhe(index){
+                if(this.chooseHuanZhe_i===index+1){
+                    this.chooseHuanZhe_i=undefined;
+                }else{
+                    this.chooseHuanZhe_i=index+1;
+                }
+            },
+            loadMore(){
+                if(this.HuanZhe_List.length<this.total){
+                    this.page++;
+                    this.query_patient();
+                }else{
+                    if(this.onceTip){
+                        lx.tipFailed('没有更多患者了');
+                        this.onceTip=false;
+                    }
+                }
+            },
+            show_patientDetails(){
+                this.patientDetails^=1;
+                let leftWidth=$('.optionA .left').width()-255+39;
+                $('.optionA .right').animate({
+                    right:'0'
+                },500);
+                $('.optionA .left').animate({
+                    width: leftWidth
+                },500);
+            },
+            hidden_patientDetails(){
+                this.patientDetails^=1;
+                $('.optionA .right').animate({
+                    right:'-255px'
+                },500);
+                $('.optionA .left').animate({
+                    width: '100%'
+                },500);
+            },
+            query_KeShi(){
+                $.ajax({
+                    type:'post',
+                    url:this.$store.state.url+'/workingGroup/findWorkingGroupsByUserId',
+                    async:false,
+                    dataType:'json',
+                    data:{
+                        userId:this.$store.state.userId
+                    },
+                    success:(data)=>{
+                        lx.con('请求科室：',data);
+                        if(data.error){
+                            lx.tipFailed(data.message)
+                        }else{
+                            this.KeShi_list=data.resultDomains;
+                            this.KeShi_check=0;
+                        }
+                    }
+                })
+            },
+            query(){
+                $('.optionA .left').scrollTop(0);
+                this.chooseHuanZhe_i=undefined;
+                this.page=1;
+                this.onceTip=true;
+                this.HuanZhe_List=[];
+                this.query_patient();
+            },
+            query_patient(){
+                $.ajax({
+                    type:'post',
+                    url:this.$store.state.url+'/patientInfo/findPatientsInfoByPage',
+                    async:false,
+                    dataType:'json',
+                    data:{
+                        workGroupId:this.KeShi_check,
+                        text:this.searchBox,
+                        isOneself:this.GuanChuang,
+                        isSerious:this.WeiJi,
+                        userId:this.$store.state.userId,
+                        page:this.page,
+                        rows:3
+                    },
+                    success:(data)=>{
+                        lx.con('患者列表：',data);
+                        if(data.error){
+                            lx.tipFailed(data.message)
+                        }else{
+                            for(let i=0; i<data.rows.length; i++){
+                                this.HuanZhe_List.push(data.rows[i]);
+                            }
+                            this.total=data.total;
+                        }
+                    }
+                })
+            }
+        },
+        beforeMount:function () {
+            this.query_KeShi();
         },
         mounted:function () {
             new BScroll.default('.optionA .side');
@@ -764,13 +386,26 @@
             .left{
                 position: absolute;
                 left: 0;
-                width: calc(100% - 255px);
+                width: calc(100%);
                 height: 100%;
                 background-color: #fff;
                 padding-bottom: 10px;
                 padding-right: 39px;
                 overflow-y: scroll;
+                .noQuery_HuanZhe{
+                    .systemText;
+                    text-align: center;
+                    margin-top: 20%;
+                }
                 .item{
+                    .border{
+                        border: 1.5px solid #27B6F5!important;
+                        border-top: 0!important;
+                    }
+                    .bg{
+                        background-color: #27B6F5!important;
+                        color: #fff!important;
+                    }
                     float: left;
                     margin-top: 10px;
                     margin-left: 10px;
@@ -794,7 +429,7 @@
                     }
                     .grid2{
                         line-height: 1.7;
-                        border: 1px solid #e3e3e3;
+                        border: 1.5px solid #e3e3e3;
                         border-top: 0;
                         .row1,.row2,.row3{
                             display: flex;
@@ -803,7 +438,7 @@
                     }
                     .grid3{
                         line-height: 1.7;
-                        border: 1px solid #e3e3e3;
+                        border: 1.5px solid #e3e3e3;
                         border-top: 0;
                         .row1,.row2{
                             display: flex;
@@ -814,7 +449,7 @@
                         display: flex;
                         padding: 4px 5px 1px 5px;
                         line-height: 1.7;
-                        border: 1px solid #e3e3e3;
+                        border: 1.5px solid #e3e3e3;
                         border-top: 0;
                         div{
                             margin-right: 6px;
@@ -834,7 +469,7 @@
             }
             .right{
                 position: absolute;
-                right: 0;
+                right: -255px;
                 width: 255px;
                 height: 100%;
                 background-color: #f7f7f7;
@@ -866,6 +501,11 @@
                     }
                 }
                 .side{
+                    .noChoose_HuanZhe{
+                        .systemText;
+                        margin-top: 80px;
+                        margin-left: 47px;
+                    }
                     line-height: 2;
                     color: @fontColor;
                     font-size: 14px;
