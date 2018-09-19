@@ -73,6 +73,7 @@
                     <div></div>
                 </div>
                 <div  class="side">
+                    <div>
                     <div v-if="chooseHuanZhe_i">
                         <div class="row row1">
                             <span class="name">{{HuanZhe_List[chooseHuanZhe_i-1].name}}</span>
@@ -158,10 +159,18 @@
                         </div>
                         <div style="height: 60px;"></div>
                     </div>
+                    </div>
                     <div v-if="!chooseHuanZhe_i" class="noChoose_HuanZhe">选择左侧患者</div>
                 </div>
             </div>
         </div>
+        <mt-popup class="popupBox" v-model="popupVisible" position="bottom">
+            <div>医嘱管理</div>
+            <div>查看电子病历</div>
+            <div>查看护理病历</div>
+            <div>查看护理记录</div>
+            <div>查看三测单</div>
+        </mt-popup>
     </div>
 </template>
 
@@ -172,8 +181,14 @@
     import { InfiniteScroll } from 'mint-ui';
     Vue.use(InfiniteScroll);
     import {lx} from "../../js/global";
+    import { Indicator } from 'mint-ui';
+    import { Popup } from 'mint-ui';
+    Vue.component(Popup.name, Popup);
     export default {
         name: "optionA",
+        components:{
+
+        },
         data:()=>({
             patientDetails:false,
             GuanChuang:true,
@@ -185,7 +200,8 @@
             total:1,
             HuanZhe_List:[],
             onceTip:true,
-            chooseHuanZhe_i:undefined
+            chooseHuanZhe_i:undefined,
+            popupVisible:false
         }),
         watch:{
             KeShi_check:function () {
@@ -194,7 +210,7 @@
                 this.page=1;
                 this.onceTip=true;
                 this.HuanZhe_List=[];
-                this.query_patient();
+                this.query_patient(1);
             },
             GuanChuang:function () {
                 $('.optionA .left').scrollTop(0);
@@ -202,7 +218,7 @@
                 this.page=1;
                 this.onceTip=true;
                 this.HuanZhe_List=[];
-                this.query_patient();
+                this.query_patient(1);
             },
             WeiJi:function () {
                 $('.optionA .left').scrollTop(0);
@@ -210,7 +226,7 @@
                 this.page=1;
                 this.onceTip=true;
                 this.HuanZhe_List=[];
-                this.query_patient();
+                this.query_patient(1);
             }
         },
         filters:{
@@ -285,9 +301,10 @@
                 this.page=1;
                 this.onceTip=true;
                 this.HuanZhe_List=[];
-                this.query_patient();
+                this.query_patient(1);
             },
-            query_patient(){
+            query_patient(type){
+                if(type){Indicator.open('加载中...')}
                 $.ajax({
                     type:'post',
                     url:this.$store.state.url+'/patientInfo/findPatientsInfoByPage',
@@ -300,13 +317,18 @@
                         isSerious:this.WeiJi,
                         userId:this.$store.state.userId,
                         page:this.page,
-                        rows:3
+                        rows:20
                     },
                     success:(data)=>{
                         lx.con('患者列表：',data);
                         if(data.error){
                             lx.tipFailed(data.message)
                         }else{
+                            if(type){
+                                setTimeout(()=>{
+                                    Indicator.close();
+                                },500);
+                            }
                             for(let i=0; i<data.rows.length; i++){
                                 this.HuanZhe_List.push(data.rows[i]);
                             }
@@ -536,6 +558,19 @@
                         background-color: #27b6f5;
                         color: #fff;
                     }
+                }
+            }
+        }
+        .popupBox{
+            width: 100%;
+            div{
+                font-size: 16px;
+                background-color: #fff;
+                padding: 9px 0;
+                border-bottom: 1px solid #e1e1e1;
+                text-align: center;
+                &:active{
+                    background-color: @grey_activeColor;
                 }
             }
         }
