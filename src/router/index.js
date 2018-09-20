@@ -1,3 +1,4 @@
+import v from '../main.js';
 import {routes} from "./test.js";
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -7,8 +8,71 @@ import optionB from '../components/options/optionB.vue';
 import optionC from '../components/options/optionC.vue';
 import optionD from '../components/options/optionD.vue';
 import optionE from '../components/options/optionE.vue';
+import HuanZheList from '../components/FUN/HuanZheList.vue';
+import YiZhuGuanLi from '../components/FUN/YiZhuGuanLi.vue';
+import ChaKanDianZiBingLi from '../components/FUN/ChaKanDianZiBingLi.vue';
+import ChaKanHuLiBingLi from '../components/FUN/ChaKanHuLiBingLi.vue';
+import ChaKanHuLiJiLu from '../components/FUN/ChaKanHuLiJiLu.vue';
+import ChaKanSanCeDan from '../components/FUN/ChaKanSanCeDan.vue';
 
 let index=[
+    {
+        name:'HuanZheList',
+        path:'/fun/HuanZheList',
+        component:HuanZheList,
+        beforeEnter(a,b,c){
+            if(v.$store.state.HuanZheID){
+                v.$router.push({
+                    name:v.$store.state.funType,
+                    params:{
+                        HuanZhe:v.$store.state.HuanZheID
+                    }
+                })
+            }else{
+                if(v.$store.state.funType==='ChaKanDianZiBingLi'){
+                    v.$router.push({
+                        name:'ChaKanDianZiBingLi'
+                    });
+                }else if(v.$store.state.funType==='ChaKanHuLiBingLi'){
+                    v.$router.push({
+                        name:'ChaKanHuLiBingLi'
+                    });
+                }else{
+                    c();
+                }
+            }
+        }
+    },
+    {
+        name:'YiZhuGuanLi',
+        path:'/fun/YiZhuGuanLi/:HuanZhe',
+        component:YiZhuGuanLi,
+        props:true
+    },
+    {
+        name:'ChaKanDianZiBingLi',
+        path:'/fun/ChaKanDianZiBingLi/:HuanZhe',
+        component:ChaKanDianZiBingLi,
+        props:true
+    },
+    {
+        name:'ChaKanHuLiBingLi',
+        path:'/fun/ChaKanHuLiBingLi/:HuanZhe',
+        component:ChaKanHuLiBingLi,
+        props:true
+    },
+    {
+        name:'ChaKanHuLiJiLu',
+        path:'/fun/ChaKanHuLiJiLu/:HuanZhe',
+        component:ChaKanHuLiJiLu,
+        props:true
+    },
+    {
+        name:'ChaKanSanCeDan',
+        path:'/fun/ChaKanSanCeDan/:HuanZhe',
+        component:ChaKanSanCeDan,
+        props:true
+    },
     {
         name:'optionA',
         path:'/optionA',

@@ -42,9 +42,7 @@
             GS:undefined
         }),
         watch:{
-            timeOutEvent(a){
-                console.log(a)
-            }
+
         },
         computed:{
             whether_setButton(){
@@ -75,7 +73,10 @@
                 return false;
             },
             R_fun(a){
-                console.log(a)
+                this.$store.commit('commit_funType',a);
+                this.$router.push({
+                    name:'HuanZheList'
+                });
             },
             whether_mark(funId){
                 return this.often.indexOf(funId) !== -1;

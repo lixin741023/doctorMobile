@@ -21,10 +21,10 @@
                 <mt-switch v-model="GuanChuang"></mt-switch>
             </div>
         </div>
-        <div class="merge">
+        <div class="merge" >
             <div class="left" v-infinite-scroll="loadMore" infinite-scroll-immediate-check="false">
                 <div v-show="HuanZhe_List.length===0" class="noQuery_HuanZhe">没有查询到患者</div>
-                <div v-for="(a,b) in HuanZhe_List" class="item" @click="chooseHuanZhe(b)" >
+                <div v-for="(a,b) in HuanZhe_List" class="item" @touchstart="gtouchstart(popupVisibleControl,a.id,b)" @touchmove="gtouchmove()" @touchend="gtouchend(b)">
                     <div class="grid1" :class="{'bg':b===chooseHuanZhe_i-1}">
                         <span>{{a.name}}</span>
                         <span>{{a.bedName}}</span>
@@ -165,11 +165,11 @@
             </div>
         </div>
         <mt-popup class="popupBox" v-model="popupVisible" position="bottom">
-            <div>医嘱管理</div>
-            <div>查看电子病历</div>
-            <div>查看护理病历</div>
-            <div>查看护理记录</div>
-            <div>查看三测单</div>
+            <div v-for="(a,b) in menuList" @click="R_fun(a.url)">
+                <img :src="$store.state.url+a.icon" alt="">
+                <span>{{a.name}}</span>
+            </div>
+            <div class="cancel" @click="popupVisible=false">取消</div>
         </mt-popup>
     </div>
 </template>
@@ -184,12 +184,14 @@
     import { Indicator } from 'mint-ui';
     import { Popup } from 'mint-ui';
     Vue.component(Popup.name, Popup);
+    let timeOutEvent2;
     export default {
         name: "optionA",
         components:{
 
         },
         data:()=>({
+            menuList:undefined,
             patientDetails:false,
             GuanChuang:true,
             WeiJi:true,
@@ -238,12 +240,39 @@
 
         },
         methods:{
+            R_fun(url){
+                this.$router.push({
+                   name:url
+                });
+            },
+            popupVisibleControl(huanZheId,index){
+                this.popupVisible=true;
+                this.chooseHuanZhe_i=index+1;
+            },
             chooseHuanZhe(index){
                 if(this.chooseHuanZhe_i===index+1){
                     this.chooseHuanZhe_i=undefined;
                 }else{
                     this.chooseHuanZhe_i=index+1;
                 }
+            },
+            gtouchstart(fun,HuanZheId,index){
+                timeOutEvent2 = setTimeout(function(){
+                    timeOutEvent2 = 0;
+                    fun(HuanZheId,index);
+                },500);
+                return false;
+            },
+            gtouchmove(){
+                clearTimeout(timeOutEvent2);
+                timeOutEvent2 = 0;
+            },
+            gtouchend(index){
+                clearTimeout(timeOutEvent2);
+                if(timeOutEvent2!==0){
+                    this.chooseHuanZhe(index);
+                }
+                return false;
             },
             loadMore(){
                 if(this.HuanZhe_List.length<this.total){
@@ -336,10 +365,32 @@
                         }
                     }
                 })
+            },
+            query_menu(){
+                $.ajax({
+                    type:'post',
+                    url:this.$store.state.url+'/operatorAddress/queryByUserId',
+                    async:false,
+                    dataType:'json',
+                    data:{
+                        userId:this.$store.state.userId,
+                        platformId:lx.platform_YiSheng
+                    },
+                    success:(data)=>{
+                        lx.con('菜单结果',data);
+                        if(data.error){
+                            lx.tipFailed(data.message);
+                        }else{
+                            this.menuList=data.resultDomain.often;
+                        }
+                    }
+                })
             }
         },
         beforeMount:function () {
             this.query_KeShi();
+            this.query_menu();
+
         },
         mounted:function () {
             new BScroll.default('.optionA .side');
@@ -563,12 +614,26 @@
         }
         .popupBox{
             width: 100%;
+            background-color: transparent;
+            .cancel{
+                margin-top: 15px;
+                color: #333333;
+                text-shadow: 2px 2px 4px #CCCCCC;
+            }
+            img{
+                width: 25px;
+                height: 25px;
+                margin-right: 10px;
+            }
             div{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #27B6F5;
                 font-size: 16px;
                 background-color: #fff;
-                padding: 9px 0;
+                padding: 12px 0;
                 border-bottom: 1px solid #e1e1e1;
-                text-align: center;
                 &:active{
                     background-color: @grey_activeColor;
                 }
@@ -583,6 +648,9 @@
                 background-color: #64BD63;
                 border-color: #64BD63;
             }
+        }
+        .v-modal{
+            opacity: 0.7;
         }
     }
 </style>

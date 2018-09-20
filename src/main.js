@@ -10,9 +10,7 @@ import mui from './plugins/mui-master/dist/js/mui.js';
 import 'mint-ui/lib/style.min.css';
 import './styles/global.less';
 
-
-
-new Vue({
+export default new Vue({
     store,
     router,
     render:(core)=>core(app)
