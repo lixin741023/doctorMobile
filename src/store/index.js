@@ -5,7 +5,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state:{
         test:21,
-        url:'http://7.0.0.114:8083/StarTrekMED',
+        // url:'http://7.0.0.114:8083/StarTrekMED',
+        url:'http://7.0.0.111:8084/StarTrekMED',
         userId:'74a941c07db840f49a011b3174404281',
         funType:undefined,
         HuanZheID:undefined

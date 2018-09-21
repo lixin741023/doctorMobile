@@ -73,6 +73,7 @@
                 return false;
             },
             R_fun(a){
+                event.preventDefault();
                 this.$store.commit('commit_funType',a);
                 this.$router.push({
                     name:'HuanZheList'
