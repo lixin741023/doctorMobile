@@ -51,7 +51,7 @@ let index=[
     },
     {
         name:'ChaKanDianZiBingLi',
-        path:'/fun/ChaKanDianZiBingLi/:HuanZhe',
+        path:'/fun/ChaKanDianZiBingLi',
         component:ChaKanDianZiBingLi,
         props:true
     },

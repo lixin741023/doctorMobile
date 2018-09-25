@@ -8,7 +8,7 @@
                     <button @click="query_HuanZheList()">搜索</button>
                 </div>
                 <div class="list">
-                    <div class="person" v-for="(a,b) in HuanZheList" @click="check_HuanZhe=a.clinicId" :class="{'active_person':check_HuanZhe===a.clinicId}" :data-id="a.clinicId">
+                    <div class="person" v-for="(a,b) in HuanZheList" @click="query_menu(a.clinicId)" :class="{'active_person':check_HuanZheId===a.clinicId}" :data-id="a.clinicId">
                         <span class="name">{{a.patientName}}</span>
                         <span class="num">{{a.number|formatter_number}}</span>
                         <div class="a">
@@ -17,11 +17,12 @@
                         </div>
                         <span class="sex">{{a.patientSexName}}</span>
                         <span class="age">{{a.patientAge}}</span>
-                        <span v-show="a.clinicId!==check_HuanZhe" class="fa fa-caret-down"></span>
-                        <span v-show="a.clinicId===check_HuanZhe" class="fa fa-caret-up"></span>
+                        <span v-show="a.clinicId!==check_HuanZheId" class="fa fa-caret-down"></span>
+                        <span v-show="a.clinicId===check_HuanZheId" class="fa fa-caret-up"></span>
                     </div>
+                    <div class="noPerson" v-show="HuanZheList.length===0">没有查询到患者</div>
                     <div class="menu">
-                        <li v-for="(a,b) in menuList" :class="{'color_li':a.number}" @click="query_test(a.number)">
+                        <li v-for="(a,b) in menuList" :class="{'color_li':a.number}" @click="query_BingLi_top(a.number,a.id,a.single)">
                             <div>
                                 <span>{{a.name}}</span>
                                 <span v-show="a.number">({{a.number}})</span>
@@ -31,14 +32,13 @@
                             </span>
                         </li>
                     </div>
-
                 </div>
             </div>
             <div class="right">
                 <div class="top">
                     <div class="arrow">
-                        <span class="fa fa-angle-double-left"></span>
-                        <!--<span class="fa fa-angle-double-right"></span>-->
+                        <span v-show="whetherShow_HuanZheList" class="fa fa-angle-double-left" @click="enlarge()"></span>
+                        <span v-show="!whetherShow_HuanZheList" class="fa fa-angle-double-right" @click="narrow()"></span>
                     </div>
                     <div class="Nav">
                         <div class="item">
@@ -60,16 +60,57 @@
                     </div>
                 </div>
                 <div class="bottom">
-                    <div class="a">
-                        <span>书写人：赵天泽泽</span>
+                    <div class="a" v-show="whetherShow_BingLiTop">
+                        <span>书写人：<span v-if="BingLi_top.length!==0">{{BingLi_top[0].name}}</span></span>
                         <div>
                             <span>保存时间：</span>
-                            <select name="" id="">
-                                <option value="">2018-09-22 07:12:91</option>
+                            <select name="" id="" v-model="BingLi_top_emrId">
+                                <option v-for="(a,b) in BingLi_top" :class="{'typeId':a.typeId}" :value="a.typeId?a.typeId:a.emrId">{{a.emrName}}</option>
                             </select>
                         </div>
                     </div>
-                    <div class="b">1</div>
+                    <div class="b">
+                        <div class="YiZhu_table" v-show="!whetherShow_BingLiTop">
+                            <h2>临时医嘱单</h2>
+                            <div class="itemTotal">
+                                <div class="item">
+                                    姓名：{{YiZhuTableTitle.patientName}}
+                                </div>
+                                <div class="item">
+                                    科别：{{YiZhuTableTitle.workingGroupName}}
+                                </div>
+                                <div class="item">
+                                    病室：{{YiZhuTableTitle.bedName}}
+                                </div>
+                                <div class="item">
+                                    床号：{{YiZhuTableTitle.bedNum}}
+                                </div>
+                                <div class="item">
+                                    住院号：{{YiZhuTableTitle.clinicNumber}}
+                                </div>
+                            </div>
+                            <table border="1" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <td class="cell100">时间</td>
+                                    <td>医嘱</td>
+                                    <td class="cell80">医师签名</td>
+                                    <td class="cell100">执行时间</td>
+                                    <td class="cell80">执行者签名</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(a,b) in YiZhuTable">
+                                    <td>{{a.startTime}}</td>
+                                    <td>{{a.content}}</td>
+                                    <td>{{a.startDoctorName}}</td>
+                                    <td>{{a.executeTime}}</td>
+                                    <td>{{a.executeNurse}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -82,10 +123,17 @@
     export default {
         name: "ChaKanDianZiBingLi",
         data:()=>({
+            searchContent:'',
             HuanZheList:[],
-            check_HuanZhe:undefined,
+            check_HuanZheId:undefined,
+            whetherShow_HuanZheList:true,
+            whetherShow_BingLiTop:true,
+
             menuList:[],
-            searchContent:''
+            BingLi_top:[],
+            BingLi_top_emrId:undefined,
+            YiZhuTableTitle:{},
+            YiZhuTable:[]
         }),
         components:{
             globalTitle
@@ -96,29 +144,37 @@
             }
         },
         watch:{
-            check_HuanZhe(clinicId){
-                $.ajax({
-                    type:'post',
-                    url:this.$store.state.url+'/emr/findClassTreeByParId',
-                    async:false,
-                    dataType:'json',
-                    data:{
-                        userId:this.$store.state.userId,
-                        clinicId:clinicId,
-                    },
-                    success:(data)=>{
-                        lx.con('查询菜单',data);
-                        if(data.error){
-                            lx.tipFailed(data.message);
-                        }else{
-                            // $(`.ChaKanDianZiBingLi .person[data-id=${this.check_HuanZhe}]`);
-                            this.menuList=data.resultDomains;
-                        }
-                    }
-                })
+            searchContent(searchContent){
+                if(searchContent===''){
+                    this.query_HuanZheList();
+                }
+            },
+            BingLi_top_emrId(id){
+
             }
         },
         methods:{
+            enlarge(){
+                let a=$('.ChaKanDianZiBingLi .left');
+                let b=$('.ChaKanDianZiBingLi .right');
+                a.animate({
+                    left:'-325px'
+                },500);
+                b.animate({
+                    width:'100%'
+                },500,()=>{this.whetherShow_HuanZheList^=1});
+            },
+            narrow(){
+                let a=$('.ChaKanDianZiBingLi .left');
+                let b=$('.ChaKanDianZiBingLi .right');
+                let bWidth=b.width()-325;
+                a.animate({
+                    left:'0'
+                },500,()=>{this.whetherShow_HuanZheList^=1});
+                b.animate({
+                    width:bWidth
+                },500);
+            },
             query_HuanZheList(){
                 $.ajax({
                     type:'post',
@@ -136,13 +192,103 @@
                             lx.tipFailed(data.message);
                         }else{
                             this.HuanZheList=data.resultDomains;
+                            this.$nextTick(()=>{
+                                let HuanZhe_row=$(`.ChaKanDianZiBingLi .person[data-id=${this.check_HuanZheId}]`);
+                                let menu=$('.ChaKanDianZiBingLi .menu');
+                                if(HuanZhe_row.length===0){
+                                    menu.css('display','none');
+                                }else{
+                                    menu.insertAfter(HuanZhe_row);
+                                    menu.css('display','block');
+                                }
+                            });
                         }
                     }
                 });
             },
-            query_test(number){
+            query_menu(clinicId){
+                if(this.check_HuanZheId===clinicId){
+                    this.check_HuanZheId=undefined;
+                    let menu=$('.ChaKanDianZiBingLi .menu');
+                    menu.css('display','none');
+                }else{
+                    this.check_HuanZheId=clinicId;
+                    $.ajax({
+                        type:'post',
+                        url:this.$store.state.url+'/emr/findClassTreeByParId',
+                        async:false,
+                        dataType:'json',
+                        data:{
+                            userId:this.$store.state.userId,
+                            clinicId:clinicId
+                        },
+                        success:(data)=>{
+                            lx.con('查询菜单',data);
+                            if(data.error){
+                                lx.tipFailed(data.message);
+                            }else{
+                                this.menuList=data.resultDomains;
+                                let HuanZhe_row=$(`.ChaKanDianZiBingLi .person[data-id=${this.check_HuanZheId}]`);
+                                let menu=$('.ChaKanDianZiBingLi .menu');
+                                menu.insertAfter(HuanZhe_row);
+                                menu.css('display','block');
+                            }
+                        }
+                    })
+                }
+            },
+            query_BingLi_top(number,menuId,single){
                 if(number){
-                    console.log(123)
+                    if(single===0||single===1){
+                        $.ajax({
+                            type:'post',
+                            url:this.$store.state.url+'/doctorAdvice/findExcedByCliIdAndCate',
+                            async:false,
+                            dataType:'json',
+                            data:{
+                                clinicId:this.check_HuanZheId,
+                                docAdviEffe:single,
+                            },
+                            success:(data)=>{
+                                lx.con('病历头（医嘱）',data);
+                                if(data.error){
+                                    lx.tipFailed(data.message);
+                                }else{
+                                    this.YiZhuTableTitle=data.resultDomain.patientInfo;
+                                    this.YiZhuTable=data.resultDomain.doctorExecute;
+                                    this.whetherShow_BingLiTop=false;
+                                }
+                            }
+                        })
+                    }else{
+                        $.ajax({
+                            type:'post',
+                            url:this.$store.state.url+'/emr/findEmrByCliIdAndClassId',
+                            async:false,
+                            dataType:'json',
+                            data:{
+                                clinicId:this.check_HuanZheId,
+                                classId:menuId,
+                                userId:this.$store.state.userId
+                            },
+                            success:(data)=>{
+                                lx.con('病历头',data);
+                                if(data.error){
+                                    lx.tipFailed(data.message);
+                                }else{
+                                    this.whetherShow_BingLiTop=true;
+                                    this.BingLi_top=data.resultDomains;
+                                    for(let i=0; i<this.BingLi_top.length; i++){
+                                        if(this.BingLi_top[i].typeId){
+                                            this.BingLi_top_emrId=this.BingLi_top[i].typeId;
+                                            return;
+                                        }
+                                    }
+                                    this.BingLi_top_emrId=this.BingLi_top[0].emrId;
+                                }
+                            }
+                        });
+                    }
                 }
             }
         },
@@ -233,10 +379,18 @@
                         right: 10px;
                     }
                 }
+                .noPerson{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    .systemText;
+                    height: 100%;
+                }
                 .active_person{
                     background-color: #27B6F5;
                 }
                 .menu{
+                    display: none;
                     li{
                         display: flex;
                         font-size: 14px;
@@ -346,6 +500,54 @@
                     height: calc(100% - 90px);
                     margin: 20px auto 0;
                     background-color: #fff;
+                    padding: 10px;
+                    .YiZhu_table{
+                        margin: 0 auto;
+                        width: 800px;
+                        h2{text-align: center}
+                        .itemTotal{
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        table{
+                            width: 100%;
+                            margin-top: 5px;
+                            border-color: #DDDDDD;
+                            td{
+                                padding: 10px 0;
+                            }
+                            thead{
+                                text-align: center;
+                                tr{
+                                    .cell100{
+                                        width: 100px;
+                                    }
+                                    .cell80{
+                                        width: 80px;
+                                    }
+                                }
+                            }
+                            tbody{
+                                tr{
+                                    td:nth-child(1){
+                                        text-align: center;
+                                    }
+                                    td:nth-child(2){
+                                        padding: 10px 15px;
+                                    }
+                                    td:nth-child(3){
+                                        text-align: center;
+                                    }
+                                    td:nth-child(4){
+                                        text-align: center;
+                                    }
+                                    td:nth-child(5){
+                                        text-align: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
