@@ -74,6 +74,12 @@ let index=[
         props:true
     },
     {
+        path:'/',
+        redirect:{
+            name:'optionA'
+        }
+    },
+    {
         name:'optionA',
         path:'/optionA',
         component:optionA

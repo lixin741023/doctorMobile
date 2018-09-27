@@ -198,8 +198,11 @@
             KeShi_check:undefined,
             KeShi_list:[],
             searchBox:'',
+
             page:1,
-            total:1,
+            pageTotal:1,
+            pageRows:20,
+
             HuanZhe_List:[],
             onceTip:true,
             chooseHuanZhe_i:undefined,
@@ -275,7 +278,7 @@
                 return false;
             },
             loadMore(){
-                if(this.HuanZhe_List.length<this.total){
+                if(this.HuanZhe_List.length<this.pageTotal){
                     this.page++;
                     this.query_patient();
                 }else{
@@ -286,23 +289,21 @@
                 }
             },
             show_patientDetails(){
-                this.patientDetails^=1;
                 let leftWidth=$('.optionA .left').width()-255+39;
                 $('.optionA .right').animate({
                     right:'0'
-                },500);
+                },500,()=>{this.patientDetails^=1});
                 $('.optionA .left').animate({
                     width: leftWidth
                 },500);
             },
             hidden_patientDetails(){
-                this.patientDetails^=1;
                 $('.optionA .right').animate({
                     right:'-255px'
                 },500);
                 $('.optionA .left').animate({
                     width: '100%'
-                },500);
+                },500,()=>{this.patientDetails^=1});
             },
             query_KeShi(){
                 $.ajax({
@@ -346,7 +347,7 @@
                         isSerious:this.WeiJi,
                         userId:this.$store.state.userId,
                         page:this.page,
-                        rows:20
+                        rows:this.pageRows
                     },
                     success:(data)=>{
                         lx.con('患者列表：',data);
@@ -361,7 +362,7 @@
                             for(let i=0; i<data.rows.length; i++){
                                 this.HuanZhe_List.push(data.rows[i]);
                             }
-                            this.total=data.total;
+                            this.pageTotal=data.total;
                         }
                     }
                 })

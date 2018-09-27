@@ -1,7 +1,8 @@
 <template>
     <div class="globalTitle">
-        <span class="fa fa-angle-left" @click="R_back()">返回</span>
+        <span class="fa fa-angle-left backIcon" @click="R_back()">返回</span>
         <span class="fun">{{funName}}</span>
+        <slot></slot>
     </div>
 </template>
 
@@ -20,14 +21,14 @@
 <style scoped lang="less">
     @import url('../../styles/custom.less');
     .globalTitle{
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
         background-color: #f7f7f7;
         border-bottom: 1px solid #e1e1e1;
         height: 39px;
-        .fa-angle-left{
+        .backIcon{
             position: absolute;
             left: 15px;
             font-size: 16px;

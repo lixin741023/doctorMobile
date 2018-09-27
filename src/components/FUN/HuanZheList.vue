@@ -1,45 +1,84 @@
 <template>
     <div class="HuanZheList">
         <div class="global_filters">
+            <span class="fa fa-angle-left" @click="R_back()">返回</span>
             <span>筛选</span>
             <span>分类</span>
         </div>
-        <ul class="list">
-            <li>
-                <span class="name">刘德一二</span>
-                <span class="sex">男</span>
-                <span class="age">100岁</span>
-                <span class="status status_red">危重</span>
+        <ul class="list" v-infinite-scroll="queryListOfPatient" >
+            <li v-for="(a,b) in patientList" @click="R_fun(a.clinicId)">
+                <span class="name">{{a.name}}</span>
+                <span class="sex">{{a.sex}}</span>
+                <span class="age">{{a.age}}</span>
+                <span class="status" :class="{'status_red':whethere_red(a.doctorsId)}">{{a.doctors}}</span>
                 <span class="HuLi">一级护理</span>
                 <span class="fa fa-chevron-right"></span>
             </li>
-            <li>
-                <span class="name">刘德一</span>
-                <span class="sex">男</span>
-                <span class="age">10岁</span>
-                <span class="status status_red">危重</span>
-                <span class="HuLi">一级护理</span>
-                <span class="fa fa-chevron-right"></span>
-            </li>
-            <li>
-                <span class="name">刘德二</span>
-                <span class="sex">男</span>
-                <span class="age">180岁</span>
-                <span class="status status_red">危重</span>
-                <span class="HuLi">一级护理</span>
-                <span class="fa fa-chevron-right"></span>
-            </li>
-
         </ul>
     </div>
 </template>
 
 <script>
+    import Vue from 'vue';
+    import { InfiniteScroll } from 'mint-ui';
+    Vue.use(InfiniteScroll);
+    import {lx} from "../../js/global";
     export default {
         name: "HuanZheList",
         data:()=>({
-
-        })
+            patientList:[],
+            page:1,
+            pageTotal:1,
+            pageRows:20,
+        }),
+        methods:{
+            R_back(){
+                this.$router.go(-1);
+            },
+            R_fun(HuanZheId){
+                this.$router.push({
+                    name:this.$store.state.funType,
+                    params:{
+                        HuanZhe:HuanZheId
+                    }
+                })
+            },
+            queryListOfPatient(){
+                if(this.patientList.length<this.pageTotal){
+                    $.ajax({
+                        type:'post',
+                        url:this.$store.state.url+'/patientInfo/findDocPatByUserIdMed',
+                        async:false,
+                        dataType:'json',
+                        data:{
+                            userId:this.$store.state.userId,
+                            page:this.page,
+                            rows:this.pageRows
+                        },
+                        success:(data)=>{
+                            lx.con('患者列表',data);
+                            if(data.error){
+                                lx.tipFailed(data.message);
+                            }else{
+                                for(let i=0; i<data.rows.length; i++){
+                                    this.patientList.push(data.rows[i]);
+                                }
+                                this.page++;
+                                this.pageTotal=data.total;
+                            }
+                        }
+                    })
+                }else{
+                    lx.tipFailed('没有更多患者了');
+                }
+            },
+            whethere_red(redStatusId){
+                return !(redStatusId === '8c03350ef1cf5933829989b7bc109ea0' || redStatusId === 'cc82870c48c750ef873905adc8c38095');
+            }
+        },
+        beforeMount:function () {
+            // this.queryListOfPatient();
+        }
     }
 </script>
 
@@ -49,6 +88,8 @@
         height: 100%;
         background-color: #f7f7f7;
         .list{
+            height: calc(100% - 39px);
+            overflow-y: scroll;
             li{
                 position: relative;
                 height: 45px;
@@ -66,25 +107,26 @@
                     color: @fontColor;
                 }
                 .sex{
-                    left: 150px;
+                    left: 170px;
                     font-size: 14px;
                     color: @fontColor;
                 }
                 .age{
-                    left: 210px;
+                    left: 230px;
                     font-size: 14px;
                     color: @fontColor;
                 }
                 .status{
-                    left: 300px;
+                    left: 320px;
                     font-size: 14px;
+                    color: @fontColor;
                 }
                 .status_red{
                     color: red;
                 }
                 .HuLi{
+                    left: 420px;
                     font-size: 15px;
-                    left: 400px;
                     color: #8278FF;
                 }
                 .fa{
@@ -94,6 +136,12 @@
                 span{
                     position: absolute;
                 }
+            }
+        }
+        .global_filters{
+            .fa{
+                position: absolute;
+                left: 15px;
             }
         }
     }
