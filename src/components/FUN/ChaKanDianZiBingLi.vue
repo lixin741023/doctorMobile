@@ -8,7 +8,7 @@
                     <button @click="query_HuanZheList()">搜索</button>
                 </div>
                 <div class="list">
-                    <div class="person" v-for="(a,b) in HuanZheList" @click="query_menu(a.clinicId)" :class="{'active_person':check_HuanZheId===a.clinicId}" :data-id="a.clinicId">
+                    <div class="person" v-for="(a,b) in HuanZheList" @click="query_menu(a.clinicId,a.patientName)" :class="{'active_person':check_HuanZheId===a.clinicId}" :data-id="a.clinicId">
                         <span class="name">{{a.patientName}}</span>
                         <span class="num">{{a.number|formatter_number}}</span>
                         <div class="a">
@@ -22,7 +22,7 @@
                     </div>
                     <div class="noPerson" v-show="HuanZheList.length===0">没有查询到患者</div>
                     <div class="menu">
-                        <li v-for="(a,b) in menuList" :class="{'color_li':a.number}" @click="query_BingLi_top(a.number,a.id,a.single)">
+                        <li v-for="(a,b) in menuList" :class="{'color_li':a.number}" @click="navControl(a.number,a.name,a.id,a.single)">
                             <div>
                                 <span>{{a.name}}</span>
                                 <span v-show="a.number">({{a.number}})</span>
@@ -40,38 +40,29 @@
                         <span v-show="whetherShow_HuanZheList" class="fa fa-angle-double-left" @click="enlarge()"></span>
                         <span v-show="!whetherShow_HuanZheList" class="fa fa-angle-double-right" @click="narrow()"></span>
                     </div>
-                    <div class="Nav">
-                        <div class="item">
-                            <span class="af">张大大大-医嘱临时打击绯闻</span>
-                            <!--<span class="fa fa-close"></span>-->
+                    <!--<div class="Nav">-->
+                    <!--</div>-->
+                    <transition-group tag="div" class="Nav" name="add">
+                        <div v-for="(a,b) in navList" class="item" :class="{'item_active':b===navI}" @click="navClick(b)" :key="a.id">
+                            <span class="af">{{a.name}}-{{a.menuName}}</span>
+                            <span v-show="b===navI" class="fa fa-close"></span>
                         </div>
-                        <div class="item">
-                            <span class="af">张大大大-医嘱临时打击绯闻</span>
-                            <!--<span class="fa fa-close"></span>-->
-                        </div>
-                        <div class="item item_active">
-                            <span class="af">张大大大-医嘱临时打击绯闻</span>
-                            <span class="fa fa-close"></span>
-                        </div>
-                        <div class="item item_active">
-                            <span class="af">张大大大-医嘱临时打击绯闻</span>
-                            <span class="fa fa-close"></span>
-                        </div>
-                    </div>
+                    </transition-group>
                 </div>
                 <div class="bottom">
                     <div class="a" v-show="whetherShow_BingLiTop">
                         <span>书写人：<span v-if="BingLi_top.length!==0">{{BingLi_top[0].name}}</span></span>
                         <div>
                             <span>保存时间：</span>
-                            <select name="" id="" v-model="BingLi_top_emrId">
+                            <select name="" id="BL" v-model="BingLi_top_emrId">
                                 <option v-for="(a,b) in BingLi_top" :class="{'typeId':a.typeId}" :value="a.typeId?a.typeId:a.emrId">{{a.emrName}}</option>
                             </select>
                         </div>
                     </div>
                     <div class="b">
+                        <div v-html="html" v-show="whetherShow_BingLiTop"></div>
                         <div class="YiZhu_table" v-show="!whetherShow_BingLiTop">
-                            <h2>临时医嘱单</h2>
+                            <h2>{{YiZhu_h2}}医嘱单</h2>
                             <div class="itemTotal">
                                 <div class="item">
                                     姓名：{{YiZhuTableTitle.patientName}}
@@ -132,8 +123,16 @@
             menuList:[],
             BingLi_top:[],
             BingLi_top_emrId:undefined,
+
             YiZhuTableTitle:{},
-            YiZhuTable:[]
+            YiZhuTable:[],
+            YiZhu_h2:'',
+
+            nav_patientName:'',
+            nav_patientId:'',
+            navList:[],
+            navI:undefined,
+            html:undefined,
         }),
         components:{
             globalTitle
@@ -149,8 +148,23 @@
                     this.query_HuanZheList();
                 }
             },
+            navI(){
+                if(this.navI<0){this.navI=0}
+                this.query_BingLi_top(this.navI);
+            },
             BingLi_top_emrId(id){
-
+                this.$nextTick(()=>{
+                    let allOption=$('.ChaKanDianZiBingLi #BL option');
+                    for(let i=0; i<allOption.length; i++){
+                        if(id===allOption.eq(i).val()){
+                            if(allOption.eq(i).hasClass('typeId')){
+                                this.get_XuXie(id);
+                            }else{
+                                this.get_normal(id);
+                            }
+                        }
+                    }
+                });
             }
         },
         methods:{
@@ -206,13 +220,17 @@
                     }
                 });
             },
-            query_menu(clinicId){
+            query_menu(clinicId,patientName){
                 if(this.check_HuanZheId===clinicId){
                     this.check_HuanZheId=undefined;
+                    this.nav_patientName='';
+                    this.nav_patientId='';
                     let menu=$('.ChaKanDianZiBingLi .menu');
                     menu.css('display','none');
                 }else{
                     this.check_HuanZheId=clinicId;
+                    this.nav_patientName=patientName;
+                    this.nav_patientId=clinicId;
                     $.ajax({
                         type:'post',
                         url:this.$store.state.url+'/emr/findClassTreeByParId',
@@ -237,63 +255,160 @@
                     })
                 }
             },
-            query_BingLi_top(number,menuId,single){
+            navControl(number,menuName,menuId,menuYiZhu){
                 if(number){
-                    if(single===0||single===1){
-                        $.ajax({
-                            type:'post',
-                            url:this.$store.state.url+'/doctorAdvice/findExcedByCliIdAndCate',
-                            async:false,
-                            dataType:'json',
-                            data:{
-                                clinicId:this.check_HuanZheId,
-                                docAdviEffe:single,
-                            },
-                            success:(data)=>{
-                                lx.con('病历头（医嘱）',data);
-                                if(data.error){
-                                    lx.tipFailed(data.message);
-                                }else{
-                                    this.YiZhuTableTitle=data.resultDomain.patientInfo;
-                                    this.YiZhuTable=data.resultDomain.doctorExecute;
-                                    this.whetherShow_BingLiTop=false;
-                                }
+                    let obj={
+                        menuName:menuName,
+                        menuId:menuId,
+                        menuYiZhu:menuYiZhu,
+                        name:this.nav_patientName,
+                        id:this.nav_patientId
+                    };
+                    let length=this.navList.length;
+                    let i=0;
+                    do{
+                        if(this.navList.length===0){
+                            this.navList.push(obj);
+                            this.navI=this.navList.length-1;
+                            break;
+                        }
+                        if(this.navList[i].id===obj.id){
+                            this.$set(this.navList,i,obj);
+                            if(this.navI!==i){
+                                this.navI=i;
+                            }else{
+                                this.query_BingLi_top(this.navI);
                             }
-                        })
-                    }else{
-                        $.ajax({
-                            type:'post',
-                            url:this.$store.state.url+'/emr/findEmrByCliIdAndClassId',
-                            async:false,
-                            dataType:'json',
-                            data:{
-                                clinicId:this.check_HuanZheId,
-                                classId:menuId,
-                                userId:this.$store.state.userId
-                            },
-                            success:(data)=>{
-                                lx.con('病历头',data);
-                                if(data.error){
-                                    lx.tipFailed(data.message);
-                                }else{
-                                    this.whetherShow_BingLiTop=true;
-                                    this.BingLi_top=data.resultDomains;
-                                    for(let i=0; i<this.BingLi_top.length; i++){
-                                        if(this.BingLi_top[i].typeId){
-                                            this.BingLi_top_emrId=this.BingLi_top[i].typeId;
-                                            return;
-                                        }
-                                    }
-                                    this.BingLi_top_emrId=this.BingLi_top[0].emrId;
-                                }
-                            }
-                        });
-                    }
+                            break;
+                        }
+                        if(i===length-1){
+                            this.navList.push(obj);
+                            this.navI=this.navList.length-1;
+                        }
+                        i++;
+                    }while (i<length);
+                    console.log(this.navList);
                 }
+            },
+            query_BingLi_top(item){
+                let single=this.navList[item].menuYiZhu;
+                if(single===0||single===1){
+                    if(single===0){
+                        this.YiZhu_h2='长期';
+                    }else if(single===1){
+                        this.YiZhu_h2='临时';
+                    }
+                    $.ajax({
+                        type:'post',
+                        url:this.$store.state.url+'/doctorAdvice/findExcedByCliIdAndCate',
+                        async:false,
+                        dataType:'json',
+                        data:{
+                            clinicId:this.navList[item].id,
+                            docAdviEffe:single,
+                        },
+                        success:(data)=>{
+                            lx.con('病历头（医嘱）',data);
+                            if(data.error){
+                                lx.tipFailed(data.message);
+                            }else{
+                                this.YiZhuTableTitle=data.resultDomain.patientInfo;
+                                this.YiZhuTable=data.resultDomain.doctorExecute;
+                                this.whetherShow_BingLiTop=false;
+                            }
+                        }
+                    })
+                }else{
+                    $.ajax({
+                        type:'post',
+                        url:this.$store.state.url+'/emr/findEmrByCliIdAndClassId',
+                        async:false,
+                        dataType:'json',
+                        data:{
+                            clinicId:this.navList[item].id,
+                            classId:this.navList[item].menuId,
+                            userId:this.$store.state.userId
+                        },
+                        success:(data)=>{
+                            lx.con('病历头',data);
+                            if(data.error){
+                                lx.tipFailed(data.message);
+                            }else{
+                                this.whetherShow_BingLiTop=true;
+                                this.BingLi_top=data.resultDomains;
+                                for(let i=0; i<this.BingLi_top.length; i++){
+                                    if(this.BingLi_top[i].typeId){
+                                        this.BingLi_top_emrId=this.BingLi_top[i].typeId;
+                                        break;
+                                    }
+                                    if(i===this.BingLi_top.length-1){
+                                        this.BingLi_top_emrId=this.BingLi_top[0].emrId;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            },
+            navClick(item){
+                if(event.target.getAttribute('class').split(' ')[0]==='fa'){
+                    this.navList.splice(item,1);
+                    this.navI--;
+                }else{
+                    this.navI=item;
+                }
+            },
+            get_XuXie(id){
+                let content='';
+                $.ajax({
+                    type:'get',
+                    url:this.$store.state.url+'/emr/queryWrittenEmr',
+                    async:false,
+                    dataType:'json',
+                    data:{
+                        clinicId:this.navList[this.navI].id,
+                        typeId:id,
+                        userId:this.$store.state.userId
+                    },
+                    success:(data)=>{
+                        lx.con('续写病历',data);
+                        if(data.error){
+                            tip.failed(data.message,1500);
+                        }else{
+                            for(let i=0; i<data.resultDomains.length; i++){
+                                content+=data.resultDomains[i].content.source;
+                            }
+                            this.html=content;
+                        }
+                    }
+                })
+            },
+            get_normal(id){
+                let content='';
+                $.ajax({
+                    type:'get',
+                    url:this.$store.state.url+'/emr/queryEmrDetailByEmrId',
+                    async:false,
+                    dataType:'json',
+                    data:{
+                        userId:this.$store.state.userId,
+                        emrId:id
+                    },
+                    success:(data)=>{
+                        lx.con('正常病历',data);
+                        if(data.error){
+                            tip.failed(data.message,1500);
+                        }else{
+                            content=data.resultDomain.content.source;
+                            this.html=content;
+                        }
+                    }
+                })
             }
         },
         beforeMount:function () {
             this.query_HuanZheList();
+
         }
     }
 </script>
@@ -436,16 +551,15 @@
                     float: left;
                     width: calc(100% - 30px);
                     height: 100%;
-
                     padding: 0 5px;
                     overflow-x: scroll;
                     overflow-y: hidden;
-                    font-size: 18px;
+                    font-size: 15px;
                     white-space: nowrap;
                     .item{
                         display: inline-block;
                         overflow: hidden;
-                        width: 170px;
+                        max-width: 170px;
                         height: 100%;
                         margin-right: 10px;
                         .af{
@@ -467,7 +581,7 @@
                         }
                     }
                     .item_active{
-                        width: 200px;
+                        max-width: 200px;
                         border-bottom: 4px solid #27B6F5;
                         color: #27B6F5;
                     }
@@ -482,7 +596,7 @@
                     overflow: scroll;
                     height: 50px;
                     color: @fontColor;
-                    font-size: 18px;
+                    font-size: 16px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
@@ -550,6 +664,17 @@
                     }
                 }
             }
+        }
+
+        /*stand by*/
+        .add-enter-active{
+            transition: 0.5s;
+        }
+        .add-enter{
+            opacity: 0;
+        }
+        .add-enter-to{
+            opacity: 1;
         }
     }
 </style>

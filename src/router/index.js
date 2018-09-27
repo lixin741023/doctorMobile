@@ -6,6 +6,7 @@ Vue.use(VueRouter);
 import optionA from '../components/options/optionA.vue';
 import optionB from '../components/options/optionB.vue';
 import optionC from '../components/options/optionC.vue';
+import login from '../components/nav/login.vue';
 import optionD from '../components/options/optionD.vue';
 import optionE from '../components/options/optionE.vue';
 import HuanZheList from '../components/FUN/HuanZheList.vue';
@@ -103,6 +104,13 @@ let index=[
         name:'optionD',
         path:'/optionD',
         component:optionD
+    },
+    {
+        name:'login',
+        path:'/login',
+        components:{
+            login:login
+        }
     }
 ];
 for(let i=0; i<routes.length; i++){
