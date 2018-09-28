@@ -21,28 +21,28 @@ let index=[
         name:'HuanZheList',
         path:'/fun/HuanZheList',
         component:HuanZheList,
-        beforeEnter(a,b,c){
-            if(v.$store.state.HuanZheID){
-                v.$router.push({
-                    name:v.$store.state.funType,
-                    params:{
-                        HuanZhe:v.$store.state.HuanZheID
-                    }
-                })
-            }else{
-                if(v.$store.state.funType==='ChaKanDianZiBingLi'){
-                    v.$router.push({
-                        name:'ChaKanDianZiBingLi'
-                    });
-                }else if(v.$store.state.funType==='ChaKanHuLiBingLi'){
-                    v.$router.push({
-                        name:'ChaKanHuLiBingLi'
-                    });
-                }else{
-                    c();
-                }
-            }
-        }
+        // beforeEnter(a,b,c){
+        //     if(v.$store.state.HuanZheID){
+        //         v.$router.push({
+        //             name:v.$store.state.funType,
+        //             params:{
+        //                 HuanZhe:v.$store.state.HuanZheID
+        //             }
+        //         })
+        //     }else{
+        //         if(v.$store.state.funType==='ChaKanDianZiBingLi'){
+        //             v.$router.push({
+        //                 name:'ChaKanDianZiBingLi'
+        //             });
+        //         }else if(v.$store.state.funType==='ChaKanHuLiBingLi'){
+        //             v.$router.push({
+        //                 name:'ChaKanHuLiBingLi'
+        //             });
+        //         }else{
+        //             c();
+        //         }
+        //     }
+        // }
     },
     {
         name:'YiZhuGuanLi',
@@ -58,7 +58,7 @@ let index=[
     },
     {
         name:'ChaKanHuLiBingLi',
-        path:'/fun/ChaKanHuLiBingLi/:HuanZhe',
+        path:'/fun/ChaKanHuLiBingLi',
         component:ChaKanHuLiBingLi,
         props:true
     },
@@ -77,7 +77,7 @@ let index=[
     {
         path:'/',
         redirect:{
-            name:'optionA'
+            name:'login'
         }
     },
     {

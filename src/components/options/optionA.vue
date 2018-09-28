@@ -166,8 +166,10 @@
         </div>
         <mt-popup class="popupBox" v-model="popupVisible" position="bottom">
             <div v-for="(a,b) in menuList" @click="R_fun(a.url)">
-                <img :src="$store.state.url+a.icon" alt="">
-                <span>{{a.name}}</span>
+                <span class="middleBox">
+                    <img :src="$store.state.url+a.icon" alt="">
+                    <span>{{a.name}}</span>
+                </span>
             </div>
             <div class="cancel" @click="popupVisible=false">取消</div>
         </mt-popup>
@@ -209,6 +211,13 @@
             popupVisible:false
         }),
         watch:{
+            chooseHuanZhe_i(i){
+                if(i){
+                    this.$store.commit('commit_HuanZheID',this.HuanZhe_List[i-1].clinicId);
+                }else{
+                    this.$store.commit('commit_HuanZheID',undefined);
+                }
+            },
             KeShi_check:function () {
                 $('.optionA .left').scrollTop(0);
                 this.chooseHuanZhe_i=undefined;
@@ -243,10 +252,20 @@
 
         },
         methods:{
-            R_fun(url){
-                this.$router.push({
-                   name:url
-                });
+            R_fun(funType){
+                this.$store.commit('commit_funType',funType);
+                if(funType==='ChaKanDianZiBingLi'||funType==='ChaKanHuLiBingLi'){
+                    this.$router.push({
+                        name:funType
+                    })
+                }else{
+                    this.$router.push({
+                        name:funType,
+                        params:{
+                            HuanZhe:this.$store.state.HuanZheID
+                        }
+                    });
+                }
             },
             popupVisibleControl(huanZheId,index){
                 this.popupVisible=true;
@@ -395,6 +414,10 @@
         },
         mounted:function () {
             new BScroll.default('.optionA .side');
+        },
+        beforeRouteLeave(a,b,c){
+            // this.$store.commit('commit_HuanZheID',undefined);
+            c();
         }
     }
 </script>
@@ -616,13 +639,17 @@
         .popupBox{
             width: 100%;
             background-color: transparent;
+            .middleBox{
+                display: inline-block;
+                width: 150px;
+            }
             .cancel{
                 margin-top: 15px;
                 color: #333333;
                 text-shadow: 2px 2px 4px #CCCCCC;
             }
             img{
-                width: 25px;
+                width: 30px;
                 height: 25px;
                 margin-right: 10px;
             }

@@ -74,10 +74,17 @@
             },
             R_fun(a){
                 event.preventDefault();
+                event.stopPropagation();
                 this.$store.commit('commit_funType',a);
-                this.$router.push({
-                    name:'HuanZheList'
-                });
+                if(a==='ChaKanDianZiBingLi'||a==='ChaKanHuLiBingLi'){
+                    this.$router.push({
+                        name:a
+                    })
+                }else{
+                    this.$router.push({
+                        name:'HuanZheList'
+                    })
+                }
             },
             whether_mark(funId){
                 return this.often.indexOf(funId) !== -1;
@@ -144,7 +151,7 @@
                         if(data.error){
                             lx.tipFailed(data.message);
                         }else{
-                            lx.tipSuccess('保存设置成功',1000,function () {
+                            lx.tipSuccess('配置保存成功',1000,function () {
                                 c();
                             })
                         }

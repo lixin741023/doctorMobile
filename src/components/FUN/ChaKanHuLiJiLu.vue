@@ -11,6 +11,14 @@
             </div>
         </globalTitle>
         <div class="container">
+            <div class="left">
+                <ul class="title">
+                    <li class="active">一般护理记录</li>
+                    <li>一般护理记录</li>
+                    <li>一般护理记录</li>
+                    <li>一般护理记录一般护理记录</li>
+                </ul>
+            </div>
             <div class="right">
                 <div class="sideTitle"></div>
                 <div class="sideButton">
@@ -133,6 +141,9 @@
                     right:'-255px'
                 },500,()=>{this.patientDetails^=1});
             }
+        },
+        mounted:function () {
+            new BScroll.default('.ChaKanHuLiJiLu .side');
         }
     }
 </script>
@@ -179,10 +190,36 @@
             position: relative;
             height: calc(100% - 39px);
             background-color: #fff;
-            overflow-y: scroll;
+            overflow: hidden;
+            .left{
+                padding-top: 1px;
+                height: 100%;
+                background-color: #fff;
+                color: @fontColor;
+                .title{
+                    padding-bottom: 4px;
+                    margin-top: 20px;
+                    white-space: nowrap;
+                    overflow-x: scroll;
+                    font-size: 18px;
+                    border-bottom: 1px solid #e1e1e1;
+                    .active{
+                        color: #27B6F5;
+                        border-bottom: 4px solid #27B6F5;
+                    }
+                    li{
+                        padding: 0 8px;
+                        display: inline;
+                        margin-left: 20px;
+
+                    }
+                }
+            }
             .right{
                 position: absolute;
+                top: 0;
                 right: 0;
+                right: -255px;
                 width: 255px;
                 height: 100%;
                 background-color: #f7f7f7;
