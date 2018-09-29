@@ -18,6 +18,48 @@
                     <li>一般护理记录</li>
                     <li>一般护理记录一般护理记录</li>
                 </ul>
+                <table border="1" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <td>AAA</td>
+                        <td>BBBB</td>
+                        <td>CC</td>
+                        <td>DDDDDDD</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>111111</td>
+                        <td>222222</td>
+                        <td>3333</td>
+                        <td>44444</td>
+                    </tr>
+                    <tr>
+                        <td>111111</td>
+                        <td>222222</td>
+                        <td>3333</td>
+                        <td>44444</td>
+                    </tr>
+                    <tr>
+                        <td>111111</td>
+                        <td>222222</td>
+                        <td>3333</td>
+                        <td>44444</td>
+                    </tr>
+                    <tr>
+                        <td>111111</td>
+                        <td>222222</td>
+                        <td>3333</td>
+                        <td>44444</td>
+                    </tr>
+                    <tr>
+                        <td>111111</td>
+                        <td>222222</td>
+                        <td>3333</td>
+                        <td>44444</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="right">
                 <div class="sideTitle"></div>
