@@ -62,8 +62,8 @@
                     <div class="b">
                         <div v-html="html" v-show="whetherShow_BingLiTop"></div>
                         <div class="YiZhu_table" v-show="!whetherShow_BingLiTop">
-                            <h2>{{YiZhu_h2}}医嘱单</h2>
-                            <div class="itemTotal">
+                            <h2 v-show="YiZhu_h2">{{YiZhu_h2}}医嘱单</h2>
+                            <div class="itemTotal" v-show="YiZhu_h2">
                                 <div class="item">
                                     姓名：{{YiZhuTableTitle.patientName}}
                                 </div>
@@ -80,7 +80,7 @@
                                     住院号：{{YiZhuTableTitle.clinicNumber}}
                                 </div>
                             </div>
-                            <table border="1" cellspacing="0">
+                            <table border="1" cellspacing="0" v-show="YiZhu_h2">
                                 <thead>
                                 <tr>
                                     <td class="cell100">时间</td>
@@ -123,6 +123,7 @@
             menuList:[],
             BingLi_top:[],
             BingLi_top_emrId:undefined,
+            html:undefined,
 
             YiZhuTableTitle:{},
             YiZhuTable:[],
@@ -132,7 +133,6 @@
             nav_patientId:'',
             navList:[],
             navI:undefined,
-            html:undefined,
         }),
         components:{
             globalTitle
@@ -148,9 +148,8 @@
                     this.query_HuanZheList();
                 }
             },
-            navI(){
-                if(this.navI<0){this.navI=0}
-                this.query_BingLi_top(this.navI);
+            navI(b){
+                if(b!==undefined){this.query_BingLi_top(b);}
             },
             BingLi_top_emrId(id){
                 this.$nextTick(()=>{
@@ -268,6 +267,7 @@
                     let i=0;
                     do{
                         if(this.navList.length===0){
+                            console.log('!!');
                             this.navList.push(obj);
                             this.navI=this.navList.length-1;
                             break;
@@ -353,7 +353,21 @@
             navClick(item){
                 if(event.target.getAttribute('class').split(' ')[0]==='fa'){
                     this.navList.splice(item,1);
-                    this.navI--;
+                    if(this.navList.length===0){
+                        this.BingLi_top=[];
+                        this.BingLi_top_emrId=undefined;
+                        this.html=undefined;
+                        this.YiZhuTableTitle={};
+                        this.YiZhuTable=[];
+                        this.YiZhu_h2='';
+                        this.navI=undefined;
+                        return;
+                    }
+                    if(item===this.navList.length){
+                        this.navI=this.navList.length-1;
+                    }else{
+                        this.query_BingLi_top(item);
+                    }
                 }else{
                     this.navI=item;
                 }

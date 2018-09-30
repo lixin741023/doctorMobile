@@ -67,7 +67,7 @@
                 $.ajax({
                     type:'post',
                     url:this.$store.state.url+'/user/checkLogin',
-                    async:false,
+                    async:true,
                     dataType:'json',
                     data:{
                         username:this.user,
