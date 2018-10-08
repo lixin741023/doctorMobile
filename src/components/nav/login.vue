@@ -76,10 +76,10 @@
                     },
                     error:()=>{
                         setTimeout(()=>{
-                            lx.tipFailed('错误:无法连接到服务器！');
+                            lx.tipFailed('网络错误:无法连接到服务器！');
                             this.whetherShow_loginBtnIng=false;
                             this.whetherShow_zzc1=false;
-                        },5000);
+                        },500);
                     },
                     success:(data)=>{
                         this.whetherShow_zzc1=false;
@@ -122,6 +122,7 @@
         beforeMount:function () {
             let arr=localStorage.getItem('serverList').split(',');
             this.serverList=arr;
+            this.$store.commit('commit_url',this.serverList[0]);
         }
     }
 </script>

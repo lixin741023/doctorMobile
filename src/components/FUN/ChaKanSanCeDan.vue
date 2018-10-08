@@ -6,6 +6,7 @@
                     <span class="fa fa-angle-left"></span>
                     <span>上一页</span>
                 </label>
+                {{page}}/{{allPage}}
                 <label @click="pageDecrease">
                     <span>下一页</span>
                     <span class="fa fa-angle-right"></span>
@@ -213,6 +214,7 @@
 </template>
 
 <script>
+    import {lx} from "../../js/global";
     import {drawThreeTestList} from "./render_Echarts";
     import globalTitle from '../nav/globalTitle.vue';
     export default {
@@ -223,10 +225,46 @@
         },
         data:()=>({
             page:1,
+            allPage:undefined
         }),
         methods:{
-            pageIncrease(){},
-            pageDecrease(){}
+            pageIncrease(){
+                if (this.page <= 1) {
+                    lx.tipFailed('当前第一页');
+                } else if (this.page >= 1) {
+                    this.page--;
+                    drawThreeTestList(this.HuanZhe,this.page);
+                }
+            },
+            pageDecrease(){
+                if (this.page >= this.allPage) {
+                    lx.tipFailed('已是最后一页');
+                } else if (this.page <= this.allPage) {
+                    this.page++;
+                    drawThreeTestList(this.HuanZhe,this.page);
+                }
+            }
+        },
+        beforeMount:function () {
+            $.ajax({
+                type:'get',
+                url:this.$store.state.url+'/threetest/findTttotalByClinicId',
+                async:false,
+                dataType:'json',
+                data:{
+                    clinicId:this.HuanZhe,
+                    rows:7
+                },
+                success:(data)=>{
+                    lx.con('总页数',data);
+                    if(data.error){
+                        lx.tipFailed(data.message,1500);
+                    }else{
+                        this.allPage=data.resultDomain;
+                        this.page=this.allPage;
+                    }
+                }
+            })
         },
         mounted:function () {
             drawThreeTestList(this.HuanZhe,this.page);

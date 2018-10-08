@@ -104,7 +104,7 @@
                     </mt-tab-container-item>
                 </mt-tab-container>
             </div>
-            <div class="right" :class="{'rightShadow':patientDetails}">
+            <div class="right rightShadow">
                 <div class="sideTitle"></div>
                 <div class="sideButton">
                     <span v-show="!patientDetails" @click="show_patientDetails" class="fa fa-angle-double-left"></span>
@@ -272,12 +272,18 @@
             show_patientDetails(){
                 $('.ChaKanHuLiJiLu .right').animate({
                     right:0
-                },500,()=>{this.patientDetails^=1});
+                },500,()=>{
+                    this.patientDetails^=1;
+                    $('.ChaKanHuLiJiLu .sideButton').removeClass('sideButton_shadow');
+                });
             },
             hidden_patientDetails(){
                 $('.ChaKanHuLiJiLu .right').animate({
                     right:'-255px'
-                },500,()=>{this.patientDetails^=1});
+                },500,()=>{
+                    this.patientDetails^=1;
+                    $('.ChaKanHuLiJiLu .sideButton').addClass('sideButton_shadow');
+                });
             }
         },
         mounted:function () {
@@ -391,6 +397,9 @@
                 .sideTitle{
                     height: 6.5px;
                     background-color: #27b6f5;
+                }
+                .sideButton_shadow{
+                    opacity: 0.3;
                 }
                 .sideButton{
                     position: absolute;
