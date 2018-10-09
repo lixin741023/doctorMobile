@@ -8,5 +8,6 @@
 ![load failed](https://github.com/lixin741023/doctorMobile/blob/master/read_me/optionA_1.png)
 ![load failed](https://github.com/lixin741023/doctorMobile/blob/master/read_me/optionA_2.png)
 ![load failed](https://github.com/lixin741023/doctorMobile/blob/master/read_me/optionC_1.png)
+![load failed](https://github.com/lixin741023/doctorMobile/blob/master/read_me/HuanZhe1.png)
 ![load failed](https://github.com/lixin741023/doctorMobile/blob/master/read_me/fun1-1.png)
 ![load failed](https://github.com/lixin741023/doctorMobile/blob/master/read_me/fun1-2.png)
